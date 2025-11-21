@@ -1,0 +1,38 @@
+name: CI - Build and Lint Resume
+
+on:
+  push:
+    branches: [ main ]
+  pull_request: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install cvlint
+        run: |
+          pip install git+https://github.com/da-luce/cvlint.git
+
+      - name: Build resume via Docker
+        run: |
+          make docker
+
+      - name: Run cvlint on resume.pdf
+        run: |
+          cvlint check build/resume.pdf --passing-score 90
+
+      # Optional: upload the PDF so you can download it from the Actions UI
+      - name: Upload resume.pdf artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: resume-pdf
+          path: build/resume.pdf

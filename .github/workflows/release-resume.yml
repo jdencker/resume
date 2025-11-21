@@ -1,0 +1,83 @@
+name: Release resume
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # need full history for changelog/tags
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install cvlint
+        run: |
+          pip install git+https://github.com/da-luce/cvlint.git
+
+      - name: Build resume via Docker
+        run: |
+          make docker
+
+      - name: Run cvlint on resume.pdf
+        run: |
+          cvlint check build/resume.pdf --passing-score 90
+
+      - name: Copy PDF into dist/
+        run: |
+          mkdir -p dist
+          cp build/resume.pdf dist/resume.pdf
+
+      - name: Bump version file
+        run: |
+          chmod +x scripts/bump-version.sh
+          scripts/bump-version.sh "${{ inputs.bump }}"
+          echo "NEW_VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Generate changelog
+        run: |
+          chmod +x scripts/generate-changelog.sh
+          scripts/generate-changelog.sh
+
+      - name: Commit dist, VERSION, and CHANGELOG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add dist VERSION CHANGELOG.md
+
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+          else
+            git commit -m "chore(release): v${NEW_VERSION}"
+            git push
+          fi
+
+      - name: Create and push tag
+        run: |
+          if git rev-parse "v${NEW_VERSION}" >/dev/null 2>&1; then
+            echo "Tag v${NEW_VERSION} already exists, skipping tag creation."
+          else
+            git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+            git push origin "v${NEW_VERSION}"
+          fi
