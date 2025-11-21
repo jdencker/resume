@@ -27,7 +27,7 @@ echo "$MSG" | grep -Eq "$PATTERN"
 OK=$?
 
 if [ $OK -ne 0 ]; then
-  echo "❌ Invalid commit message:"
+  echo "Invalid commit message:"
   echo "    \"$MSG\""
   echo
   echo "Required format:"
