@@ -1,0 +1,49 @@
+#!/bin/sh
+# Simple Conventional Commit-style linter for commit messages.
+# Enforces: type[(scope)]: subject
+# Allowed types: feat, fix, docs, chore
+
+MSG_FILE="$1"
+MSG=$(sed -n '1p' "$MSG_FILE" | tr -d '\r')  # only first line, strip CR
+
+# Allow merge commits / reverts to pass through
+case "$MSG" in
+  "Merge "*|"Revert "*)
+    exit 0
+    ;;
+esac
+
+# Empty message? Let Git handle that.
+[ -z "$MSG" ] && exit 0
+
+# Pattern:
+#   type         = feat|fix|docs|chore
+#   optional scope in parentheses
+#   colon + space
+#   non-empty subject
+PATTERN='^\(feat\|fix\|docs\|chore\)\(\([[:space:]]*([[:alnum:]_-]\+)\)\)\{0,1\}: .\+'
+
+echo "$MSG" | grep -Eq "$PATTERN"
+OK=$?
+
+if [ $OK -ne 0 ]; then
+  echo "❌ Invalid commit message:"
+  echo "    \"$MSG\""
+  echo
+  echo "Required format:"
+  echo "    type(scope): short, imperative description"
+  echo
+  echo "Allowed types:"
+  echo "    feat, fix, docs, chore"
+  echo
+  echo "Examples:"
+  echo "    feat(resume): add new bullets"
+  echo "    fix(resume): correct header alignment in contact row"
+  echo "    docs: update README with cvlint instructions"
+  echo "    chore(ci): tweak resume.yml workflow"
+  echo
+  echo "Tip: scope is optional, but type and ': ' + subject are required."
+  exit 1
+fi
+
+exit 0
