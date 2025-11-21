@@ -2,35 +2,29 @@
 % License: MIT
 
 % ----------------------------------------- PREAMBLE --------------------------------------------- %
-\documentclass[a4paper,12pt]{article}
+\documentclass[letterpaper,10pt]{article}
 
+% Hyperlinks
 \usepackage{url}
-%for social icons
+
+% Icons
 \usepackage{fontawesome5}
 
-% formatting
-\RequirePackage{color}
-\RequirePackage{graphicx}
-\usepackage[usenames,dvipsnames]{xcolor}
+% Layout & Formatting
 \usepackage[scale=0.9]{geometry}
 \usepackage{parskip}
-
-%tabularx environment
 \usepackage{tabularx}
-
-%for lists within experience section
 \usepackage{enumitem}
+\usepackage{titlesec}
 
 % centered version of 'X' col. type
 \newcolumntype{C}{>{\centering\arraybackslash}X} 
 
-%custom \section
-\usepackage{titlesec}				
-\usepackage{multicol}
-\usepackage{multirow}
+% Custom \section
 \titleformat{\section}{\large\scshape\raggedright}{}{0em}{}[\titlerule]
 \titlespacing{\section}{0pt}{0pt}{8pt}
 
+% Custom itemize environment
 \newenvironment{tightitemize}{%
   \begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]%
 }{%
@@ -49,7 +43,8 @@
     \raisebox{-0.05\height}\faGithub\ jdencker.github.io $|$
     \raisebox{-0.05\height}\faLinkedin\ /in/jonathan-dencker $|$
     \raisebox{-0.05\height}\faEnvelope \ jonathandencker@gmail.com $|$
-    \raisebox{-0.05\height}\faMobile \ (615) 708-1825
+    \raisebox{-0.05\height}\faMobile \ (615) 708-1825 $|$
+    \raisebox{-0.05\height}\faMapMarker \ Chicago, IL
 }
 \\
 \end{tabularx}
