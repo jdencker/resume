@@ -21,7 +21,7 @@ esac
 #   optional scope in parentheses
 #   colon + space
 #   non-empty subject
-PATTERN='^\(feat\|fix\|docs\|chore\)\(\([[:space:]]*([[:alnum:]_-]\+)\)\)\{0,1\}: .\+'
+PATTERN='^(feat|fix|docs|chore)(\([a-zA-Z0-9_-]+\))?: .+'
 
 echo "$MSG" | grep -Eq "$PATTERN"
 OK=$?
