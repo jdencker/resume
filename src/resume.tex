@@ -21,14 +21,23 @@
 \newcolumntype{C}{>{\centering\arraybackslash}X} 
 
 % Custom \section
-\titleformat{\section}{\large\scshape\raggedright}{}{0em}{}[\titlerule]
+\titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
 \titlespacing{\section}{0pt}{0pt}{8pt}
 
 % Custom itemize environment
 \newenvironment{tightitemize}{%
-  \begin{itemize}[itemsep=0pt, topsep=0pt, parsep=0pt, partopsep=0pt]%
+  \begin{itemize}[
+    itemsep=0pt, % seperation between bullets
+    topsep=0pt, % top & bottom seperation between itemize and bordering elements
+    leftmargin=12pt, % left margin in raw pt from left of page
+    parsep=0pt,
+    partopsep=0pt,
+    label=\scriptsize$\bullet$ % reduce standard bullet size
+  ]%
+  \footnotesize
 }{%
-  \end{itemize}\vspace{-\parskip}%
+  \end{itemize}
+  %
 }
 
 % ----------------------------------------- DOCUMENT --------------------------------------------- %
@@ -40,76 +49,87 @@
 \Huge{Jonathan Dencker}
 \\ [8pt]
 \makebox[\linewidth]{
-    \raisebox{-0.05\height}\faGithub\ jdencker.github.io $|$
-    \raisebox{-0.05\height}\faLinkedin\ /in/jonathan-dencker $|$
-    \raisebox{-0.05\height}\faEnvelope \ jonathandencker@gmail.com $|$
-    \raisebox{-0.05\height}\faMobile \ (615) 708-1825 $|$
-    \raisebox{-0.05\height}\faMapMarker \ Chicago, IL
+    \raisebox{-0.1\height}\faGithub\ jdencker.github.io $|$
+    \raisebox{-0.1\height}\faLinkedin\ /in/jonathan-dencker $|$
+    \raisebox{-0.1\height}\faEnvelope \ jonathandencker@gmail.com $|$
+    \raisebox{-0.1\height}\faMobile \ (615) 708-1825 $|$
+    \raisebox{-0.1\height}\faMapMarker \ Chicago, IL
 }
-\\
 \end{tabularx}
 
-\vfill
+\vspace{18pt}
 %% ----- EDUCATION ----- %
 \section{Education}
-    \begin{tabularx}{\linewidth}{@{}l X@{}}
-        \textbf{Carnegie Mellon University $\cdot$ Pittsburgh, PA} & \hfill \textbf{2020\hspace{2pt}-\hspace{2pt}2022} \\
-        \footnotesize  \textbf{ - Master of Science, Electrical \& Computer Engineering} & \hfill \footnotesize GPA: 3.75/4.00\\
-        [-3pt] \footnotesize \hspace{8.5pt} Concentration: Artificial Intelligence \& Machine Learning Systems & \hfill \\
-        [4pt]
-        \footnotesize  \textbf{ - Master of Information Systems Management} & \hfill \footnotesize GPA: 3.91/4.00\\
-        [-3pt] \footnotesize \hspace{8.5pt}  Concentration: Business Intelligence \& Data Analytics & \hfill \\
-        [8pt]
-        \textbf{United States Military Academy $\cdot$ West Point, NY} & \hfill \textbf{2013\hspace{2pt}-\hspace{2pt}2017} \\
-        \footnotesize \textbf{ - Bachelor of Science, Electrical Engineering \& Mathematics} & \hfill \footnotesize GPA: 3.72/4.00\\
-        [-3pt] \footnotesize \hspace{8.5pt} Graduated with Honors $\cdot$ Distinguished Cadet Designation (Top 5\%)
-    \end{tabularx}
-\vfill
+    \textbf{Carnegie Mellon University  \hfill \textbf{Pittsburgh, PA}} \\
+    \hspace*{0.5pt}Master of Science, Electrical \& Computer Engineering \hfill 2020\hspace{2pt}-\hspace{2pt}2022 \\
+        \vspace{-18pt}
+        \begin{tightitemize}
+            \item Concentration: Artificial Intelligence \& Machine Learning Systems
+            \item GPA: 3.75/4.00
+        \end{tightitemize}
+        \vspace{-2pt}
+    \textbf{Carnegie Mellon University  \hfill \textbf{Pittsburgh, PA}} \\
+    \hspace*{0.5pt}Master of Information Systems Management \hfill 2020\hspace{2pt}-\hspace{2pt}2022 \\
+        \vspace{-18pt}
+        \begin{tightitemize}
+            \item Concentration: Business Intelligence \& Data Analytics
+            \item GPA: 3.91/4.00
+        \end{tightitemize}
+        \vspace{-2pt}
+    \textbf{United States Military Academy \hfill West Point, NY} \\
+    \hspace*{0.5pt}Bachelor of Science, Electrical Engineering \& Mathematics \hfill 2013\hspace{2pt}-\hspace{2pt}2017 \\
+        \vspace{-18pt}
+        \begin{tightitemize}
+            \item Concentrations: Optical Signal Processing \& Applied Mathematics
+            \item GPA: 3.72/4.00
+        \end{tightitemize}
+\bigskip
 %% ----- EXPERIENCE ----- %
 \section{Professional Experience}
-    \small \textbf{Data \& Innovation Directorate, U.S. Army Recruiting Command} \hfill \textbf{Chicago, IL} \\ [2pt]
-    \footnotesize \textit{\textbf{Data Integration Lead}} \small \hfill 2024\hspace{2pt}-\hspace{2pt}Present \newline
-    \vspace{-1.8em}
-    \begin{tightitemize}
-        \item \footnotesize Built the organization's first unified data environment by integrating 20+ enterprise systems, developing end-to-end data pipelines, and producing a near-real-time dashboard for the Commanding General, who's performance review touted me as the best technical captain she had encountered in her entire career.
-        \item \footnotesize Developed an automated reporting pipeline that expanded the organization's reporting throughput by 50\% while virtually eliminating errors, streamling compliance reports provided to Congress and Senior Government Officials. 
-        \item \footnotesize Authored and implemented the data strategy for an organization with a \$14M annual technology budget, adopted by parent organization.
-    \end{tightitemize}
-    \vspace{0.5em}
-    \small \textbf{A.I. Task Force, U.S. Army Futures Command}  \hfill \textbf{Pittsburgh, PA} \\ [2pt]
-    \footnotesize \textit{\textbf{Product Lead}} \small \hfill 2022\hspace{2pt}-\hspace{2pt}2024 \newline
-    \vspace{-1.8em}
-    \begin{tightitemize}
-        \item \footnotesize Scaled a product from the initial concept, authoring the MVP, to building a fully-operational enterprise software application, deployed across multiple classified and sensitive DOD Networks and Information Systems.
-        \item \footnotesize Led a cross-functional team of 10 Officers and 10 contractors, with a \$4M annual development budget, driving technical strategy, roadmap execution, and stakeholder alignment.
-        \item \footnotesize Worked with the Army's CIO to utilize industry-standard CI/CD practices, resulting in a path to production that could support multiple daily deployments, in an otherwise rigid government compliance \& security framework.
-    \end{tightitemize}
-    \vspace{0.5em}
-    \small \textbf{11th Airborne Infantry Division, U.S. Army} \hfill \textbf{Anchorage, AK} \\ [2pt]
-    \footnotesize \textit{\textbf{Battalion Logisitics Officer}} \hfill \small 2019\hspace{2pt}-\hspace{2pt}2020 \newline
-    \vspace{-1.8em}
-    \begin{tightitemize}
-        \item \footnotesize Coordinated and managed logistics for a 600-person organization, with \$50M of vehicles and sensitive equipment.
-        \item \footnotesize Conducted multiple complex international and inter-state, multi-modal (air, rail, sea, and ground) movements, always meeting mission requirements in spite of highly constrained protocols imposed during the initial COVID-19 outbreak.
-    \end{tightitemize}
-    \vspace{0.2em}
-    \footnotesize \textit{\textbf{Rifle Platoon Leader}} \hfill \small 2018\hspace{2pt}-\hspace{2pt}2019 \newline
-    \vspace{-1.8em}
-    \begin{tightitemize}
-        \item \footnotesize Led and developed a 40-person platoon; planned, resourced, and executed high-risk training, while maintaining 100\% compliance with readiness programs and full accountability of \$5M in assets, achieving a top-5\% evaluation.
-    \end{tightitemize}
-\vfill
+    \textbf{Data \& Innovation Directorate, U.S. Army Recruiting Command} \hfill \textbf{Chicago, IL} \\
+    \hspace*{0.5pt}Data Integration Lead \hfill 2024\hspace{2pt}-\hspace{2pt}Present \\
+        \vspace{-18pt}
+        \begin{tightitemize}
+            \item Built the organization's first unified data environment, integrating 20+ enterprise systems, developing end-to-end data pipelines, and producing a real-time dashboard for the Commanding General, whose performance review cited me as the best technical captain she had seen in her career.
+            \item Developed an automated reporting pipeline that expanded the organization's reporting throughput by 50\% while virtually eliminating errors, streamlining compliance reports provided to Congress and Senior Government Officials. 
+            \item Authored and implemented the data strategy for an organization with a \$14M annual technology budget, adopted by parent organization.
+        \end{tightitemize}
+        \vspace{-2pt}
+    \textbf{A.I. Task Force, U.S. Army Futures Command}  \hfill \textbf{Pittsburgh, PA} \\
+    \hspace*{0.5pt}Product Lead \hfill 2022\hspace{2pt}-\hspace{2pt}2024 \\
+        \vspace{-18pt}
+        \begin{tightitemize}
+            \item \footnotesize Scaled a product from the initial concept, authoring the MVP, to building a fully-operational enterprise software application, deployed across multiple classified and sensitive DOD Networks and Information Systems.
+            \item \footnotesize Led a cross-functional team of 10 Officers and 10 contractors, with a \$4M annual development budget, driving technical strategy, roadmap execution, and stakeholder alignment.
+            \item \footnotesize Worked with the Army's CIO to utilize industry-standard CI/CD practices, resulting in a path to production that could support multiple daily deployments, in an otherwise rigid government compliance \& security framework.
+        \end{tightitemize}
+        \vspace{-2pt}
+    \textbf{11th Airborne Infantry Division, U.S. Army} \hfill \textbf{Anchorage, AK} \\
+    \hspace*{0.5pt}Battalion Logistics Officer \hfill  2019\hspace{2pt}-\hspace{2pt}2020 \\
+        \vspace{-18pt}
+        \begin{tightitemize}
+            \item \footnotesize Coordinated and managed logistics for a 600-person organization, with \$50M of vehicles and sensitive equipment.
+            \item \footnotesize Conducted multiple complex international and inter-state, multi-modal (air, rail, sea, and ground) movements, always meeting mission requirements in spite of highly constrained protocols imposed during the initial COVID-19 outbreak.
+        \end{tightitemize}
+        \vspace{-2pt}
+    \hspace*{0.5pt}Rifle Platoon Leader \hfill 2018\hspace{2pt}-\hspace{2pt}2019 \\
+        \vspace{-18pt}
+        \begin{tightitemize}
+            \item \footnotesize Led and developed a 40-person platoon; planned, resourced, and executed high-risk training, while maintaining 100\% compliance with readiness programs and full accountability of \$5M in assets, achieving a top-5\% evaluation.
+        \end{tightitemize}
+        \vspace{-2pt}
+\bigskip
 %% ------ SKILLS ----- %
-\section{Certifications \& Technical Competancies}
+\section{Certifications \& Technical Competencies}
     \begin{tabularx}{\linewidth}{@{}l X@{}}
         \small Certifications &  \scriptsize{CompTIA Security+ $\cdot$ Palantir Foundry Application Developer $\cdot$ Palantir Foundry Data Engineer}\\
         \small Programming &  \scriptsize{Python $\cdot$ SQL $\cdot$ Linux $\cdot$ Git $\cdot$ Docker $\cdot$ Kubernetes $\cdot$ Typescript \
                                             $\cdot$ PyTorch $\cdot$ Java $\cdot$ LaTeX $\cdot$ MATLAB $\cdot$ C $\cdot$ R $\cdot$ VHDL}\\
-        \small Competancies & \scriptsize{Data Science $\cdot$ Data Engineering $\cdot$ Machine Learning $\cdot$ Application Development \
+        \small Competencies & \scriptsize{Data Science $\cdot$ Data Engineering $\cdot$ Machine Learning $\cdot$ Application Development \
                                             $\cdot$ CI/CD $\cdot$ Containerization $\cdot$ Software Ops} \\
         \small Other & \scriptsize{Active TS/SCI Clearance $\cdot$ U.S. Army Ranger School Graduate $\cdot$ Licensed Affiliate Real Estate Broker $\cdot$ Master Scuba Diver} \\
     \end{tabularx}
-\vfill
+\bigskip
 %% ------ HONORS & AWARDS ----- %
 \section{Honors \& Awards}
     \begin{tabularx}{\linewidth}{@{}l X@{}}
