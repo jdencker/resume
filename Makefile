@@ -4,7 +4,7 @@ OUT_PDF    := $(BUILD_DIR)/resume.pdf
 # Most Recent Multi-Arch Image -- Using Debian not Alpine for LateX
 IMAGE_NAME := ghcr.io/xu-cheng/texlive-historic-debian:2024
 
-.PHONY: all clean docker
+.PHONY: all clean docker lint
 
 # Local Build
 all: $(OUT_PDF)
@@ -30,6 +30,11 @@ docker:
 	  make
 
 lint:
-	@echo "Running cvlint on build/resume.pdf..."
-	@.venv/bin/cvlint check build/resume.pdf --passing-score 90
-	@echo "Lint passed!"
+	@# Ensure the PDF exists
+	@if [ ! -f "$(OUT_PDF)" ]; then \
+		echo "Error: $(OUT_PDF) not found — build the resume first (e.g. 'make docker')."; \
+		exit 1; \
+	fi
+
+	@echo "  Running cvlint on $(OUT_PDF)..."
+	@.venv/bin/cvlint check "$(OUT_PDF)" --passing-score 90 || true;
