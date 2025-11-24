@@ -44,16 +44,61 @@ if ! docker info >/dev/null 2>&1; then
 fi
 printf "${GREEN} ->${RESET} Docker daemon is running.\n\n"
 
+# Optional: Local Linting environment
+LINT_ENV_OK=true
+printf "${CYAN}Optional (but required for CI Pipeline Pass): local linting python evironment with cvlint...${RESET}\n"
+check_cmd python3.11
+printf "${GREEN} ->${RESET} python3.11 found.\n"
+if [ -d ".venv" ]; then
+    printf "${GREEN} ->${RESET} .venv found.\n"
+
+    if .venv/bin/python3.11 -c "import cvlint" >/dev/null 2>&1; then
+        printf "${GREEN} ->${RESET} cvlint installed inside .venv.\n\n"
+    else
+        printf "${YELLOW} -> cvlint NOT installed inside .venv.${RESET}\n\n"
+        LINT_ENV_OK=false
+    fi
+else
+    printf "${YELLOW}No .venv/ directory detected.${RESET}\n\n"
+    LINT_ENV_OK=false
+fi
+
 # Setup git hooks
 printf "${CYAN}Configuring git hooks...${RESET}\n"
+GIT_HOOKS_OK=true
 git config core.hooksPath hooks
 
 if [ -f hooks/commit-msg ]; then
   chmod +x hooks/commit-msg
   printf "${GREEN} ->${RESET} commit-msg hook enabled.\n"
 else
-  printf "${YELLOW}Warning:${RESET} hooks/commit-msg not found. CI may fail without this. Try pulling the latest repo again.\n"
+  GIT_HOOKS_OK=false
+  printf "${YELLOW} -> hooks/commit-msg not found.${RESET}\n"
 fi
 
-echo
-printf "${GREEN}Setup complete.${RESET}\n"
+
+printf "\n${CYAN}-------------------------------------${RESET}\n"
+printf "${CYAN}|        Environment Summary        |\n${RESET}"
+printf "${CYAN}-------------------------------------${RESET}\n"
+
+printf "${GREEN}✓ Required tools installed${RESET}\n"
+printf "${GREEN}✓ Docker daemon running${RESET}\n"
+if [ "$GIT_HOOKS_OK" = true ]; then
+  printf "${GREEN}✓ Git hooks correclty configured${RESET}\n"
+else
+  printf "${YELLOW}⚠ Git hooks NOT correctly configured.\nCI will fail. Local dev is still possible.\n.${RESET}\n"
+  printf 
+fi
+
+if [ "$LINT_ENV_OK" = true ]; then
+  printf "${GREEN}✓ Local linting environment ready (.venv + cvlint)${RESET}\n"
+else
+  printf "${YELLOW}⚠ Local linting environment NOT set up${RESET}\n"
+  printf "Local linting (via 'make lint') will not work until you create and activate a venv.\n\n"
+  printf "  To enable, run:\n"
+  printf "     python3.11 -m venv .venv\n"
+  printf "     source .venv/bin/activate\n"
+  printf "     pip install -r requirements.txt\n"
+fi
+
+printf "\n${GREEN}Setup complete.${RESET}\n\n"

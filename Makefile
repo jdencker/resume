@@ -28,3 +28,8 @@ docker:
 	  -w /work \
 	  $(IMAGE_NAME) \
 	  make
+
+lint:
+	@echo "Running cvlint on build/resume.pdf..."
+	@.venv/bin/cvlint check build/resume.pdf --passing-score 90
+	@echo "Lint passed!"

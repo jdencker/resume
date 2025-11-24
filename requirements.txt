@@ -1,0 +1,4 @@
+# Resume project dependencies
+# cvlint is installed directly from GitHub.
+
+git+https://github.com/da-luce/cvlint.git
