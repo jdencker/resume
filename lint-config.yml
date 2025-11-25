@@ -13,5 +13,17 @@ criteria:
   PDF Structure and Metadata: true
   PDF Integrity: true
 
-ignore-words:
-  teasdfx
+allowlist:
+  - Analytics
+  - CompTIA
+  - github
+  - gmail
+  - jdencker
+  - jonathan-dencker
+  - jonathandencker
+  - Kubernetes
+  - Palantir
+  - PyTorch
+  - roadmap
+  - timelines
+  - show-of-force
