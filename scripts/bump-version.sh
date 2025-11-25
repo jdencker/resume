@@ -10,9 +10,10 @@ fi
 
 BUMP_TYPE="$1"
 
+# Initialize VERSION if missing
 if ! [ -f VERSION ]; then
-  echo "VERSION file not found at the repo root."
-  exit 1
+  echo "Initializing VERSION to 0.1.0"
+  echo "0.1.0" > VERSION
 fi
 
 VERSION=$(cat VERSION)
