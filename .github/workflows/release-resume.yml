@@ -31,17 +31,18 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install cvlint
+      - name: Install Python dependencies
         run: |
-          pip install git+https://github.com/da-luce/cvlint.git
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Build resume via Docker
         run: |
           make docker
 
-      - name: Run cvlint on resume.pdf
+      - name: Run unified lint (codespell + pyspellchecker + cvlint)
         run: |
-          cvlint check build/resume.pdf --passing-score 90
+          make lint PYTHON=python
 
       - name: Copy PDF into dist/
         run: |

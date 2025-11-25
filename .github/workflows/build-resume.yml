@@ -6,7 +6,7 @@ on:
   pull_request: {}
 
 jobs:
-  build:
+  build-and-lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,20 +18,21 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install cvlint
+      - name: Install Python dependencies
         run: |
-          pip install git+https://github.com/da-luce/cvlint.git
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Build resume via Docker
         run: |
           make docker
 
-      - name: Run cvlint on resume.pdf
+      - name: Run unified lint (codespell + pyspellchecker + cvlint)
         run: |
-          cvlint check build/resume.pdf --passing-score 90
+          make lint PYTHON=python
 
-      # Optional: upload the PDF so you can download it from the Actions UI
       - name: Upload resume.pdf artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: resume-pdf

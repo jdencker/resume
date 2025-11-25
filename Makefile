@@ -3,6 +3,8 @@ BUILD_DIR  := build
 OUT_PDF    := $(BUILD_DIR)/resume.pdf
 # Most Recent Multi-Arch Image -- Using Debian not Alpine for LateX
 IMAGE_NAME := ghcr.io/xu-cheng/texlive-historic-debian:2024
+# set default for local dev, overwrite in CI Pipeline
+PYTHON ?= .venv/bin/python
 
 .PHONY: all clean docker lint
 
@@ -35,4 +37,4 @@ lint:
 		exit 1; \
 	fi
 
-	@.venv/bin/python scripts/run_lint.py
+	@$(PYTHON) scripts/run_lint.py
