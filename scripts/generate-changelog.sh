@@ -27,29 +27,30 @@ FIXED=""
 DOCS=""
 CHORE=""
 
-# Classify commits
+# Classify based on prefixes
 echo "$COMMITS" | while read -r LINE; do
   case "$LINE" in
-    feat*)
-      ADDED="${ADDED}\n- ${LINE#*: }"
+    feat:*)
+      echo "ADDED: ${LINE#feat: }"
       ;;
-    fix*)
-      FIXED="${FIXED}\n- ${LINE#*: }"
+    fix:*)
+      echo "FIXED: ${LINE#fix: }"
       ;;
-    docs*)
-      DOCS="${DOCS}\n- ${LINE#*: }"
+    docs:*)
+      echo "DOCS: ${LINE#docs: }"
       ;;
-    chore*)
-      CHORE="${CHORE}\n- ${LINE#*: }"
+    chore:*)
+      echo "CHORE: ${LINE#chore: }"
       ;;
   esac
 done > .changelog.tmp
 
-# Load results from the loop
-ADDED=$(grep "^-" .changelog.tmp | grep -E "^[[:space:]]*-" | grep -i "feat"  || true)
-FIXED=$(grep "^-" .changelog.tmp | grep -E "^[[:space:]]*-" | grep -i "fix"   || true)
-DOCS=$(grep "^-" .changelog.tmp | grep -E "^[[:space:]]*-" | grep -i "docs"  || true)
-CHORE=$(grep "^-" .changelog.tmp | grep -E "^[[:space:]]*-" | grep -i "chore" || true)
+# Parse the bucket file
+ADDED=$(grep "^ADDED:" .changelog.tmp  | sed 's/^ADDED: /- /'  || true)
+FIXED=$(grep "^FIXED:" .changelog.tmp  | sed 's/^FIXED: /- /'  || true)
+DOCS=$(grep "^DOCS:"  .changelog.tmp  | sed 's/^DOCS: /- /'   || true)
+CHORE=$(grep "^CHORE:" .changelog.tmp | sed 's/^CHORE: /- /'  || true)
+
 rm -f .changelog.tmp
 
 # Build the new section
@@ -75,9 +76,9 @@ NEW_SECTION="${NEW_SECTION}\n\n"
 
 # Prepend to CHANGELOG.md
 if [ -f CHANGELOG.md ]; then
-  echo "$NEW_SECTION$(cat CHANGELOG.md)" > CHANGELOG.md
+  printf "%b\n%b" "$NEW_SECTION" "$(cat CHANGELOG.md)" > CHANGELOG.md
 else
-  echo -e "# Changelog\n\n${NEW_SECTION}" > CHANGELOG.md
+  printf "# Changelog\n\n%b" "$NEW_SECTION" > CHANGELOG.md
 fi
 
 echo "CHANGELOG.md updated for v${VERSION}"
