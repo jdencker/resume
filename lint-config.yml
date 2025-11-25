@@ -1,0 +1,17 @@
+passing_score: 100
+
+criteria:
+  PDF File Exists: true
+  Single Page Limit: true
+  File Size Constraint: true
+  Font Size Range: false
+  HTTPS Links Only: true
+  No Embedded Images: true
+  White Background: true
+  Grayscale Colors Only: true
+  Spell Check and Capitalization: false
+  PDF Structure and Metadata: true
+  PDF Integrity: true
+
+ignore-words:
+  teasdfx

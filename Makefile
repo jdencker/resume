@@ -30,11 +30,9 @@ docker:
 	  make
 
 lint:
-	@# Ensure the PDF exists
 	@if [ ! -f "$(OUT_PDF)" ]; then \
 		echo "Error: $(OUT_PDF) not found — build the resume first (e.g. 'make docker')."; \
 		exit 1; \
 	fi
 
-	@echo "  Running cvlint on $(OUT_PDF)..."
-	@.venv/bin/cvlint check "$(OUT_PDF)" --passing-score 90 || true;
+	@.venv/bin/python scripts/run_lint.py
