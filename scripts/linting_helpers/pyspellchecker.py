@@ -93,18 +93,18 @@ def run_pyspellchecker(src_filepath: str, lint_config_filepath: str) -> int:
             errors_by_word.setdefault(w, set()).add(actual_line)
 
     table = Table(title="PySpellChecker")
-    table.add_column("Word", style="red")
     table.add_column("Line(s)", style="cyan")
-
+    table.add_column("Word", style="red")
+    
     if not errors_by_word:
-        table.add_row("[green]No unknown words found[/green]")
+        table.add_row("-", "[green]None[/green]")
         print(table)
         print("PySpellChecker: [green]PASS")
         return 0
     else:
-        for word in sorted(errors_by_word.keys(), key=str.lower):
+        for word in sorted(errors_by_word.keys(), key=lambda w: min(errors_by_word[w])):
             lines_str = ", ".join(str(n) for n in sorted(errors_by_word[word]))
-            table.add_row(word, lines_str)
+            table.add_row(lines_str, word)
         print(table)
         print("PySpellChecker: [red]FAIL")
         return 1
