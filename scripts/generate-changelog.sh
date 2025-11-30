@@ -26,21 +26,31 @@ ADDED=""
 FIXED=""
 DOCS=""
 CHORE=""
+OTHER=""
 
-# Classify based on prefixes
+# Classify based on prefixes (supports scoped conventional commits)
 echo "$COMMITS" | while read -r LINE; do
-  case "$LINE" in
-    feat:*)
-      echo "ADDED: ${LINE#feat: }"
+  TYPE=$(printf '%s\n' "$LINE" | sed 's/^\([a-z]*\).*/\1/')
+  MESSAGE="${LINE#*: }"
+  if [ "$MESSAGE" = "$LINE" ]; then
+    MESSAGE="$LINE"
+  fi
+
+  case "$TYPE" in
+    feat)
+      echo "ADDED: ${MESSAGE}"
       ;;
-    fix:*)
-      echo "FIXED: ${LINE#fix: }"
+    fix)
+      echo "FIXED: ${MESSAGE}"
       ;;
-    docs:*)
-      echo "DOCS: ${LINE#docs: }"
+    docs)
+      echo "DOCS: ${MESSAGE}"
       ;;
-    chore:*)
-      echo "CHORE: ${LINE#chore: }"
+    chore)
+      echo "CHORE: ${MESSAGE}"
+      ;;
+    *)
+      echo "OTHER: ${MESSAGE}"
       ;;
   esac
 done > .changelog.tmp
@@ -50,6 +60,7 @@ ADDED=$(grep "^ADDED:" .changelog.tmp  | sed 's/^ADDED: /- /'  || true)
 FIXED=$(grep "^FIXED:" .changelog.tmp  | sed 's/^FIXED: /- /'  || true)
 DOCS=$(grep "^DOCS:"  .changelog.tmp  | sed 's/^DOCS: /- /'   || true)
 CHORE=$(grep "^CHORE:" .changelog.tmp | sed 's/^CHORE: /- /'  || true)
+OTHER=$(grep "^OTHER:" .changelog.tmp | sed 's/^OTHER: /- /'  || true)
 
 rm -f .changelog.tmp
 
@@ -70,6 +81,10 @@ fi
 
 if [ -n "$CHORE" ]; then
   NEW_SECTION="${NEW_SECTION}\n\n### Chore\n${CHORE}"
+fi
+
+if [ -n "$OTHER" ]; then
+  NEW_SECTION="${NEW_SECTION}\n\n### Other\n${OTHER}"
 fi
 
 NEW_SECTION="${NEW_SECTION}\n\n"
