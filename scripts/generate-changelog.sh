@@ -19,28 +19,38 @@ else
   RANGE="${LAST_TAG}..HEAD"
 fi
 
-# Extract commit messages following conventional commit structure.
-COMMITS=$(git log --pretty=format:"%s" $RANGE)
+# Extract commit messages following conventional commit structure, skip merge commits.
+COMMITS=$(git log --no-merges --pretty=format:"%s" $RANGE)
 
 ADDED=""
 FIXED=""
 DOCS=""
 CHORE=""
+OTHER=""
 
-# Classify based on prefixes
+# Classify based on prefixes (supports scoped conventional commits)
 echo "$COMMITS" | while read -r LINE; do
-  case "$LINE" in
-    feat:*)
-      echo "ADDED: ${LINE#feat: }"
+  TYPE=$(printf '%s\n' "$LINE" | sed 's/^\([a-z]*\).*/\1/')
+  MESSAGE="${LINE#*: }"
+  if [ "$MESSAGE" = "$LINE" ]; then
+    MESSAGE="$LINE"
+  fi
+
+  case "$TYPE" in
+    feat)
+      echo "ADDED: ${MESSAGE}"
       ;;
-    fix:*)
-      echo "FIXED: ${LINE#fix: }"
+    fix)
+      echo "FIXED: ${MESSAGE}"
       ;;
-    docs:*)
-      echo "DOCS: ${LINE#docs: }"
+    docs)
+      echo "DOCS: ${MESSAGE}"
       ;;
-    chore:*)
-      echo "CHORE: ${LINE#chore: }"
+    chore)
+      echo "CHORE: ${MESSAGE}"
+      ;;
+    *)
+      echo "OTHER: ${MESSAGE}"
       ;;
   esac
 done > .changelog.tmp
@@ -50,6 +60,7 @@ ADDED=$(grep "^ADDED:" .changelog.tmp  | sed 's/^ADDED: /- /'  || true)
 FIXED=$(grep "^FIXED:" .changelog.tmp  | sed 's/^FIXED: /- /'  || true)
 DOCS=$(grep "^DOCS:"  .changelog.tmp  | sed 's/^DOCS: /- /'   || true)
 CHORE=$(grep "^CHORE:" .changelog.tmp | sed 's/^CHORE: /- /'  || true)
+OTHER=$(grep "^OTHER:" .changelog.tmp | sed 's/^OTHER: /- /'  || true)
 
 rm -f .changelog.tmp
 
@@ -72,11 +83,16 @@ if [ -n "$CHORE" ]; then
   NEW_SECTION="${NEW_SECTION}\n\n### Chore\n${CHORE}"
 fi
 
+if [ -n "$OTHER" ]; then
+  NEW_SECTION="${NEW_SECTION}\n\n### Other\n${OTHER}"
+fi
+
 NEW_SECTION="${NEW_SECTION}\n\n"
 
-# Prepend to CHANGELOG.md
+# Prepend to CHANGELOG.md while keeping the top-level header at the top
 if [ -f CHANGELOG.md ]; then
-  printf "%b\n%b" "$NEW_SECTION" "$(cat CHANGELOG.md)" > CHANGELOG.md
+  EXISTING_BODY=$(tail -n +2 CHANGELOG.md)  # drop the "# Changelog" header
+  printf "# Changelog\n\n%b%b" "$NEW_SECTION" "$EXISTING_BODY" > CHANGELOG.md
 else
   printf "# Changelog\n\n%b" "$NEW_SECTION" > CHANGELOG.md
 fi
