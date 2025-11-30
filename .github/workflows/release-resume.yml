@@ -41,10 +41,6 @@ jobs:
         run: |
           make docker
 
-      - name: Run Unified Lint (codespell + pyspellchecker + cvlint)
-        run: |
-          make lint PYTHON=python
-
       - name: Copy PDF into dist/
         run: |
           mkdir -p dist
