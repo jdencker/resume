@@ -19,8 +19,8 @@ else
   RANGE="${LAST_TAG}..HEAD"
 fi
 
-# Extract commit messages following conventional commit structure.
-COMMITS=$(git log --pretty=format:"%s" $RANGE)
+# Extract commit messages following conventional commit structure, skip merge commits.
+COMMITS=$(git log --no-merges --pretty=format:"%s" $RANGE)
 
 ADDED=""
 FIXED=""
@@ -89,9 +89,10 @@ fi
 
 NEW_SECTION="${NEW_SECTION}\n\n"
 
-# Prepend to CHANGELOG.md
+# Prepend to CHANGELOG.md while keeping the top-level header at the top
 if [ -f CHANGELOG.md ]; then
-  printf "%b\n%b" "$NEW_SECTION" "$(cat CHANGELOG.md)" > CHANGELOG.md
+  EXISTING_BODY=$(tail -n +2 CHANGELOG.md)  # drop the "# Changelog" header
+  printf "# Changelog\n\n%b%b" "$NEW_SECTION" "$EXISTING_BODY" > CHANGELOG.md
 else
   printf "# Changelog\n\n%b" "$NEW_SECTION" > CHANGELOG.md
 fi
