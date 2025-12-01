@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.0 - 2025-12-01
+
+
+### Fixed
+- changelog autogeneration script change
+- remove excessive/duplicated linting from release workflow
+- correct changelog and generation script
+- change script to pick up on commit style; add fallback category in event of failures
+
+
 ## v0.2.0 - 2025-11-30
 
 ### Added
