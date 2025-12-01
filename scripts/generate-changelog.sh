@@ -9,14 +9,16 @@ fi
 VERSION=$(cat VERSION)
 DATE=$(date +"%Y-%m-%d")
 
-# Determine last tag
+# Determine last tag or last VERSION commit to limit the range
 LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+LAST_VERSION_COMMIT=$(git log --pretty=format:"%H" -n1 -- VERSION 2>/dev/null || echo "")
 
-if [ -z "$LAST_TAG" ]; then
-  # No previous tags → use entire history
-  RANGE=""
-else
+if [ -n "$LAST_TAG" ]; then
   RANGE="${LAST_TAG}..HEAD"
+elif [ -n "$LAST_VERSION_COMMIT" ]; then
+  RANGE="${LAST_VERSION_COMMIT}..HEAD"
+else
+  RANGE=""
 fi
 
 # Extract commit messages following conventional commit structure, skip merge commits.
