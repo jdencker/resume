@@ -1,4 +1,4 @@
-name: Release resume
+name: Release Resume
 
 on:
   workflow_dispatch:
@@ -58,6 +58,7 @@ jobs:
           scripts/generate-changelog.sh
 
       - name: Create Release Pull Request
+        id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -74,3 +75,31 @@ jobs:
           labels: release
           base: main
           delete-branch: true
+
+      - name: Create tag for version
+        run: |
+          TAG="v${NEW_VERSION}"
+          SHA="${{ steps.create_pr.outputs.pull-request-head-sha }}"
+          if [ -z "$SHA" ]; then
+            echo "No PR commit SHA found; skipping tag."
+            exit 0
+          fi
+          if git ls-remote --tags origin | grep -q "refs/tags/${TAG}$"; then
+            echo "Tag ${TAG} already exists; skipping."
+          else
+            git tag "${TAG}" "${SHA}"
+            git push origin "${TAG}"
+          fi
+
+      - name: Create GitHub Release for major versions
+        if: ${{ inputs.bump == 'major' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.NEW_VERSION }}
+          release_name: v${{ env.NEW_VERSION }}
+          body: |
+            Release v${{ env.NEW_VERSION }}
+
+            See CHANGELOG.md for details.
