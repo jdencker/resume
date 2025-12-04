@@ -1,8 +1,8 @@
-# LaTeX Resume · Reproducible Build · CI/Lint · Versioned Releases
+# LaTeX Resume · Docker Build · CI/Lint · Versioned Releases
 
 This repo contains my single-page LaTeX resume, backed by a **reproducible build system**, **automated linting**, and **GitHub Actions workflows** for CI and releases.
 
-- Deterministic builds via Docker
+- Deterministic builds via Docker - also enables local builds without local TeX distribution
 - Spellchecking that correctly parses LaTeX
 - PDF validation via `cvlint`
 - CI-gated changes to `main`
