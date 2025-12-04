@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.0 - 2025-12-04
+
+### Added
+- final release changes
+
+
 ## v0.4.0 - 2025-12-04
 
 
