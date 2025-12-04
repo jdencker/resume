@@ -1,4 +1,4 @@
-name: Release Resume
+name: CI - Release Resume
 
 on:
   workflow_dispatch:
