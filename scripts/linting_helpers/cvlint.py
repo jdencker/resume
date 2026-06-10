@@ -1,4 +1,5 @@
 import subprocess
+
 import yaml
 
 
@@ -30,7 +31,7 @@ def run_cvlint(pdf_filepath: str, lint_config_filepath: str) -> int:
     
     print("\n" + "-" * 25 + " CV LINT " + "-" * 25 + "\n")
 
-    with open(lint_config_filepath, "r") as f:
+    with open(lint_config_filepath) as f:
         config = yaml.safe_load(f)
         
     passing_score = config.get("passing_score", 100)

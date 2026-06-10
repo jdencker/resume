@@ -1,7 +1,8 @@
-from linting_helpers import run_codespell, run_cvlint, run_pyspellchecker
-from rich.panel import Panel
-from rich import print
 import sys
+
+from linting_helpers import run_codespell, run_cvlint, run_pyspellchecker
+from rich import print
+from rich.panel import Panel
 
 LINT_CONFIG = "lint-config.yml"
 SRC = "src/resume.tex"
