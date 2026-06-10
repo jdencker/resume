@@ -1,0 +1,60 @@
+name: Release - Publish Résumé Version
+
+# Phase 2 of the release process: tag and publish a résumé edition. This runs
+# only after a version bump has landed on main (i.e. a propose PR was merged),
+# so the tag always points at a real commit on main and can never be published
+# from an unmerged branch.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - VERSION
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0  # need tags to check for an existing release
+
+      - name: Read version
+        run: |
+          echo "NEW_VERSION=$(cat VERSION)" >> "$GITHUB_ENV"
+
+      - name: Check whether this version is already tagged
+        id: check
+        run: |
+          if git ls-remote --tags origin "refs/tags/v${NEW_VERSION}" | grep -q .; then
+            echo "Tag v${NEW_VERSION} already exists; nothing to publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve release notes
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          NOTES="release-notes/v${NEW_VERSION}.md"
+          if [ ! -f "$NOTES" ]; then
+            echo "Release notes $NOTES missing; using a default body."
+            mkdir -p release-notes
+            printf '# Résumé v%s\n' "${NEW_VERSION}" > "$NOTES"
+          fi
+          echo "NOTES_PATH=${NOTES}" >> "$GITHUB_ENV"
+
+      - name: Tag and publish GitHub Release
+        if: steps.check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: v${{ env.NEW_VERSION }}
+          name: v${{ env.NEW_VERSION }}
+          target_commitish: ${{ github.sha }}
+          body_path: ${{ env.NOTES_PATH }}
+          files: dist/resume.pdf

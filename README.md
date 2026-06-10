@@ -22,17 +22,19 @@ A high-level view of the repository layout:
     ├── dist/                       # Latest released résumé (GitHub Pages)
     │   └── resume.pdf
     │
+    ├── release-notes/              # Per-edition résumé release notes (vX.Y.Z.md)
+    │
     ├── scripts/
     │   ├── run_lint.py             # Unified lint runner
-    │   ├── bump-version.sh         # Semantic version bumping
-    │   ├── generate-changelog.sh   # Changelog creation
+    │   ├── bump-version.sh         # Semantic version bumping (résumé releases)
     │   ├── setup.sh                # Local env setup helper
     │   └── linting_helpers/        # Spellcheck + cvlint helpers
     │
     ├── .github/
     │   └── workflows/              # CI + release pipelines
     │       ├── build-resume.yml    # PR build, lint, ruff, commit-message checks
-    │       └── release-resume.yml  # Manual versioned release
+    │       ├── release-propose.yml # Manual: open a versioned release PR
+    │       └── release-publish.yml # Auto on VERSION change: tag + GitHub Release
     │
     ├── hooks/                     
     │   └── commit-msg              # conventional commit style linter for commit messages
@@ -43,7 +45,7 @@ A high-level view of the repository layout:
     ├── Makefile                    # Build + lint commands
     ├── LICENSE
     ├── VERSION                     # Current release version
-    ├── CHANGELOG.md                # Auto-generated release notes
+    ├── CHANGELOG.md                # Technical / infra changelog
     └── README.md
 
 ## Dependencies
@@ -117,8 +119,8 @@ This repository provides a reproducible, automated workflow for maintaining a si
 - Branch protection ensures only lint-clean changes reach `main`.
 
 ### Release Workflow
-- A manual GitHub Action handles official releases.
-- Rebuilds and re-lints the résumé, updates `VERSION`, regenerates `CHANGELOG.md`, commits release artifacts, and tags the version.
+- A two-phase process: a manual workflow opens a versioned release PR, and a second workflow tags and publishes the GitHub Release only after it merges to `main`.
+- Rebuilds and re-lints the résumé, updates `VERSION`, and publishes the PDF with per-edition release notes.
 
 ### GitHub Pages Distribution
 - The `dist/` directory is published via GitHub Pages.
@@ -178,16 +180,24 @@ This keeps `main` consistently buildable and lint-clean.
 
 ## Release Workflow
 
-Official résumé releases are created through a manual GitHub Actions workflow.
+Résumé releases use a **two-phase** process so a version is only ever published from `main`, never from an unmerged branch.
 
-### What the Release Workflow Does
-1. Rebuilds the résumé using Docker  
-2. Runs the full lint suite  
-3. Updates the `VERSION` file  
-4. Regenerates `CHANGELOG.md`  
-5. Copies the validated PDF to `dist/resume.pdf`  
-6. Commits release artifacts back to `main` and creates a version tag  
+### Phase 1 — Propose (`release-propose.yml`, manual)
+Dispatched manually with a `bump` type (patch/minor/major) and a one-line `summary`. It:
+1. Rebuilds the résumé in Docker and runs the full lint suite  
+2. Bumps the `VERSION` file  
+3. Copies the validated PDF to `dist/resume.pdf`  
+4. Writes the summary to `release-notes/vX.Y.Z.md`  
+5. Opens a release pull request  
 
-This ensures every published résumé is versioned, validated, and fully traceable.
+No tag or GitHub Release is created in this phase.
+
+### Phase 2 — Publish (`release-publish.yml`, automatic)
+Triggered when a change to `VERSION` lands on `main` (i.e. a release PR is merged). It tags `vX.Y.Z` at that commit and creates the GitHub Release — using `release-notes/vX.Y.Z.md` as the body and attaching `dist/resume.pdf`.
+
+This guarantees every published résumé is versioned, validated, and traceable, and that the tag always points at a real commit on `main`.
+
+### Versioning and changelog
+`VERSION` tracks the **résumé document**, not the build tooling — a bump means a new edition of the résumé. Each edition is a Git tag + GitHub Release. `CHANGELOG.md` is a separate **technical** changelog for build, CI, and tooling changes.
 
 ## GitHub Pages [Coming Soon]

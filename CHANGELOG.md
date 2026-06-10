@@ -1,5 +1,34 @@
 # Changelog
 
+This changelog tracks **technical and infrastructure changes** to the build
+system, CI, and tooling in this repository.
+
+Résumé editions are versioned separately: each is published as a Git tag
+(`vX.Y.Z`) and a [GitHub Release](../../releases) with its own notes and PDF.
+This file does **not** track résumé content changes.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/).
+
+## [Unreleased]
+
+### Changed
+- Split the release process into two phases: `release-propose.yml` opens a
+  versioned release PR, and `release-publish.yml` tags and publishes only
+  after that PR merges to `main`. A version can no longer be published from an
+  unmerged branch.
+- Repurposed this changelog to track technical changes only; résumé edition
+  notes now live in GitHub Releases (sourced from `release-notes/vX.Y.Z.md`).
+
+### Removed
+- `scripts/generate-changelog.sh` — résumé changelog auto-generation is retired.
+
+---
+
+## Résumé release history (frozen)
+
+_The entries below predate the technical-changelog split and document earlier
+résumé versions. Newer résumé editions are recorded as GitHub Releases._
+
 ## v1.0.0 - 2025-12-04
 
 ### Added
