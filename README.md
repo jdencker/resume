@@ -31,13 +31,15 @@ A high-level view of the repository layout:
     │
     ├── .github/
     │   └── workflows/              # CI + release pipelines
-    │       ├── ci.yml
-    │       └── release.yml
+    │       ├── build-resume.yml    # PR build, lint, ruff, commit-message checks
+    │       └── release-resume.yml  # Manual versioned release
     │
     ├── hooks/                     
     │   └── commit-msg              # conventional commit style linter for commit messages
     │
     ├── lint-config.yml             # Spellchecker allowlist + cvlint rules
+    ├── ruff.toml                   # Ruff config for Python tooling
+    ├── requirements.txt            # Pinned Python dependencies
     ├── Makefile                    # Build + lint commands
     ├── LICENSE
     ├── VERSION                     # Current release version
@@ -59,7 +61,7 @@ NOTE: The Docker workflow bundles all LaTeX dependencies, so no system-level TeX
 
 #### Setup Script
   - `scripts/setup.sh`
-  - setups up required commit formatting hook
+  - sets up the required commit formatting hook
   - checks for runtime dependencies (run locally as well)
   - also checks for Python dependencies:
     - **Python 3.11+**
@@ -106,9 +108,11 @@ This repository provides a reproducible, automated workflow for maintaining a si
 - All linting steps return non-zero exit codes to support CI gating.
 
 ### Continuous Integration
-- Every push and pull request triggers a CI workflow that:
+- Every pull request to `main` triggers a CI workflow that:
   - Builds the résumé in Docker
   - Runs the full lint suite
+  - Lints the Python tooling with ruff
+  - Validates commit messages against the Conventional Commit rules
   - Uploads the generated PDF as an artifact
 - Branch protection ensures only lint-clean changes reach `main`.
 
@@ -156,12 +160,14 @@ A non-zero exit code from any check causes the entire lint step to fail, which i
 
 ## Continuous Integration
 
-All pushes and pull requests run an automated CI workflow that builds and validates the résumé.
+All pull requests to `main` run an automated CI workflow that builds and validates the résumé.
 
 ### What CI Does
 1. Builds the PDF in a pinned Docker environment  
 2. Runs the unified lint suite  
-3. Uploads the generated PDF as an artifact for review  
+3. Lints the Python tooling with ruff  
+4. Validates the PR's commit messages against the Conventional Commit rules  
+5. Uploads the generated PDF as an artifact for review  
 
 ### Branch Protection
 The `main` branch is protected so that:

@@ -1,7 +1,9 @@
 # Resume project dependencies
-# cvlint is installed directly from GitHub.
-
-git+https://github.com/da-luce/cvlint.git
-codespell
-pyyaml
-pyspellchecker
+# Pinned for reproducible builds. cvlint is installed directly from GitHub
+# and pinned to a specific commit.
+cvlint @ git+https://github.com/da-luce/cvlint.git@1d7f001a594bf499bc2111a70a1f9e36b8003f93
+codespell==2.4.1
+PyYAML==6.0.3
+pyspellchecker==0.8.3
+rich==13.9.4
+ruff==0.15.16

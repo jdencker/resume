@@ -1,6 +1,7 @@
 import subprocess
-from rich.table import Table
+
 from rich import print
+from rich.table import Table
 
 
 def run_codespell(src_filepath: str) -> int:
