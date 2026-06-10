@@ -1,8 +1,10 @@
-from spellchecker import SpellChecker
+import re
+
+import yaml
 from rich import print
 from rich.table import Table
-import re
-import yaml
+from spellchecker import SpellChecker
+
 
 def run_pyspellchecker(src_filepath: str, lint_config_filepath: str) -> int:
     """
@@ -31,7 +33,7 @@ def run_pyspellchecker(src_filepath: str, lint_config_filepath: str) -> int:
     
     print("\n" + "-" * 25 + " PY SPELL CHECK " + "-" * 25 + "\n")
 
-    with open(src_filepath, "r") as f:
+    with open(src_filepath) as f:
         src_code = f.read()
         
     body = re.search(
@@ -56,7 +58,7 @@ def run_pyspellchecker(src_filepath: str, lint_config_filepath: str) -> int:
     spell = SpellChecker(language="en")
     allowed_word_set = set()  # default if config missing or malformed
     try:
-        with open(lint_config_filepath, "r") as f:
+        with open(lint_config_filepath) as f:
             config = yaml.safe_load(f) or {}
         allowlist = config.get("allowlist", [])
         allowed_word_set = {w.lower() for w in allowlist}

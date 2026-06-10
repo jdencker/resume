@@ -1,0 +1,7 @@
+# Ruff configuration for the project's Python tooling (scripts/).
+target-version = "py311"
+line-length = 120
+
+[lint]
+# Default rule set plus import sorting (I) and common pyflakes/pycodestyle checks.
+select = ["E", "F", "I", "UP", "B"]

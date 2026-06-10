@@ -1,6 +1,6 @@
 from .codespell import run_codespell
-from .pyspellchecker import run_pyspellchecker
 from .cvlint import run_cvlint
+from .pyspellchecker import run_pyspellchecker
 
 __all__ = [
     "run_codespell",
