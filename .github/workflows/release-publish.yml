@@ -10,6 +10,8 @@ on:
     branches: [ main ]
     paths:
       - VERSION
+      - pages/**
+    workflow_dispatch:
 
 permissions:
   contents: write
@@ -58,3 +60,45 @@ jobs:
           target_commitish: ${{ github.sha }}
           body_path: ${{ env.NOTES_PATH }}
           files: dist/resume.pdf
+
+  deploy-pages:
+    name: Deploy résumé to GitHub Pages
+    needs: publish
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    concurrency:
+      group: github-pages
+      cancel-in-progress: true
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Assemble Pages site
+        run: |
+          mkdir -p pages-site
+          cp pages/index.html pages-site/index.html
+          cp dist/resume.pdf pages-site/resume.pdf
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: pages-site
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

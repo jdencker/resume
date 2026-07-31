@@ -1,203 +1,141 @@
-# LaTeX Resume · Docker Build · CI/Lint · Versioned Releases
+# LaTeX Résumé
 
-This repo contains my single-page LaTeX resume, backed by a **reproducible build system**, **automated linting**, and **GitHub Actions workflows** for CI and releases.
+This repository contains the source and delivery pipeline for my single-page résumé. The document is built reproducibly with a pinned TeX Live container, validated in CI, and published as a versioned PDF.
 
-- Deterministic builds via Docker - also enables local builds without local TeX distribution
-- Spellchecking that correctly parses LaTeX
-- PDF validation via `cvlint`
-- CI-gated changes to `main`
-- Manual release workflow that versions and publishes a downloadable PDF via GitHub Pages
+## What this repository provides
 
-## Repository Structure
+- A reproducible Docker-based LaTeX build
+- LaTeX-aware spelling and structural PDF validation
+- Pull-request quality gates for the résumé and its supporting scripts
+- A two-phase release workflow that publishes only from `main`
+- A stable copy of the latest released PDF in `dist/resume.pdf`
 
-A high-level view of the repository layout:
+## Typical update workflow
 
-    .
-    ├── src/
-    │   └── resume.tex              # LaTeX source code
-    │
-    ├── build/                      # (gitignored) Generated during local/CI builds
-    │   └── resume.pdf
-    │
-    ├── dist/                       # Latest released résumé (GitHub Pages)
-    │   └── resume.pdf
-    │
-    ├── release-notes/              # Per-edition résumé release notes (vX.Y.Z.md)
-    │
-    ├── scripts/
-    │   ├── run_lint.py             # Unified lint runner
-    │   ├── bump-version.sh         # Semantic version bumping (résumé releases)
-    │   ├── setup.sh                # Local env setup helper
-    │   └── linting_helpers/        # Spellcheck + cvlint helpers
-    │
-    ├── .github/
-    │   └── workflows/              # CI + release pipelines
-    │       ├── build-resume.yml    # PR build, lint, ruff, commit-message checks
-    │       ├── release-propose.yml # Manual: open a versioned release PR
-    │       └── release-publish.yml # Auto on VERSION change: tag + GitHub Release
-    │
-    ├── hooks/                     
-    │   └── commit-msg              # conventional commit style linter for commit messages
-    │
-    ├── lint-config.yml             # Spellchecker allowlist + cvlint rules
-    ├── ruff.toml                   # Ruff config for Python tooling
-    ├── requirements.txt            # Pinned Python dependencies
-    ├── Makefile                    # Build + lint commands
-    ├── LICENSE
-    ├── VERSION                     # Current release version
-    ├── CHANGELOG.md                # Technical / infra changelog
-    └── README.md
+1. Edit the résumé content in `src/resume.tex`.
+2. Run `make docker` followed by `make lint`.
+3. Commit the change on a branch, push it, and open a pull request into `main`.
+4. Wait for CI to pass, review the generated PDF artifact, and merge the pull request.
+5. In GitHub Actions, run **Release - Propose Résumé Version** and choose the appropriate version bump.
+6. Review and merge the generated release pull request. The publish workflow then creates the tag and GitHub Release automatically.
 
-## Dependencies
+## Repository structure
 
-This project requires only a few external tools, all of which are installed automatically in CI or via Docker-based builds.
+```text
+.
+├── src/
+│   └── resume.tex              # Résumé source
+├── build/                      # Local and CI build output (gitignored)
+│   └── resume.pdf
+├── dist/
+│   └── resume.pdf              # Latest released résumé
+├── release-notes/
+│   └── vX.Y.Z.md               # Notes for each résumé edition
+├── scripts/
+│   ├── run_lint.py             # Unified lint runner
+│   ├── bump-version.sh         # Semantic version helper
+│   ├── setup.sh                # Local environment setup
+│   └── linting_helpers/        # Spellcheck and PDF-validation helpers
+├── .github/workflows/
+│   ├── build-resume.yml        # Pull-request quality checks
+│   ├── release-propose.yml     # Opens a versioned release PR
+│   └── release-publish.yml     # Tags and publishes a merged release
+├── hooks/commit-msg            # Conventional commit-message check
+├── lint-config.yml             # Spellchecker allowlist and cvlint rules
+├── ruff.toml                   # Python lint configuration
+├── requirements.txt            # Pinned Python dependencies
+├── Makefile                    # Build and lint commands
+├── VERSION                     # Current résumé edition
+└── CHANGELOG.md                # Build and tooling changes
+```
 
-### Runtime Dependencies
-- **Docker** (recommended for reproducible builds)
-- **Make** (used to orchestrate build and lint targets)
+## Local development
 
-### Local Development
-If you want to run the lint suite locally (useful for checking CI outcomes prior to pushing):
+The recommended local dependencies are Docker and Make. Python 3.11 or later is also required to run the lint suite outside CI.
 
-NOTE: The Docker workflow bundles all LaTeX dependencies, so no system-level TeX installation is required unless you choose to build locally.
+Run the setup helper once after cloning:
 
-#### Setup Script
-  - `scripts/setup.sh`
-  - sets up the required commit formatting hook
-  - checks for runtime dependencies (run locally as well)
-  - also checks for Python dependencies:
-    - **Python 3.11+**
-    - **requirements.txt**
-    - **TeX Live** with `latexmk` (local builds without docker - not recommended)
+```bash
+scripts/setup.sh
+```
 
-#### Makefile targets:
-  1. `make` -> defaults to local (non-docker) build
-  2. `make docker` -> docker-based build
-  3. `make lint` -> local env based lint
-  4. `make clean` -> removes `build/` dir for clean latex build
-  
-#### Commit Message Format Requirements
-Simple Conventional Commit-style linter for commit messages.
-Enforces: `type(scope): subject`
-Allowed types: 
-  - feat
-  - fix
-  - docs
-  - chore
+### Build
 
-## Goals
+Use the pinned TeX Live container for the reproducible build:
 
-This repo is designed to showcase:
+```bash
+make docker
+```
 
-- Clear, concise technical communication (through the resume itself)
-- Engineering discipline around build pipelines and CI
-- Attention to detail through strict linting and quality gates
-- A clean, maintainable structure suitable for long-term use
+The generated PDF is written to `build/resume.pdf`.
 
-## Features
+If a compatible TeX Live installation is already available locally, run:
 
-This repository provides a reproducible, automated workflow for maintaining a single-page LaTeX résumé with consistent quality and versioned releases.
+```bash
+make
+```
 
-### Reproducible Builds
-- Deterministic PDF output using a pinned TeXLive Docker image.
-- Makefile-based build system for both Docker and local LaTeX environments.
+Remove generated build files with:
 
-### Automated Linting
-- Unified `make lint` command that runs:
-  - codespell for common spelling issues
-  - a LaTeX-aware spellchecker with an allowlist
-  - cvlint for structural PDF checks
-- All linting steps return non-zero exit codes to support CI gating.
+```bash
+make clean
+```
 
-### Continuous Integration
-- Every pull request to `main` triggers a CI workflow that:
-  - Builds the résumé in Docker
-  - Runs the full lint suite
-  - Lints the Python tooling with ruff
-  - Validates commit messages against the Conventional Commit rules
-  - Uploads the generated PDF as an artifact
-- Branch protection ensures only lint-clean changes reach `main`.
+### Validate
 
-### Release Workflow
-- A two-phase process: a manual workflow opens a versioned release PR, and a second workflow tags and publishes the GitHub Release only after it merges to `main`.
-- Rebuilds and re-lints the résumé, updates `VERSION`, and publishes the PDF with per-edition release notes.
+Build the PDF before running the unified lint suite:
 
-### GitHub Pages Distribution
-- The `dist/` directory is published via GitHub Pages.
-- The latest released résumé is available at a stable, downloadable URL.
+```bash
+make docker
+make lint
+```
 
-## Build Instructions
+Validation includes:
 
-The résumé can be built either through Docker (recommended) or a local LaTeX installation. All build commands are defined in the Makefile.
+- `codespell` for common spelling errors
+- LaTeX-aware spellchecking against the project allowlist
+- `cvlint` checks for page count, metadata, links, and document structure
+- Ruff checks for the Python tooling in CI
 
-### Build with Docker (reproducible)
-This method ensures a consistent TeXLive environment across all machines:
+## Automation
 
-    make docker
+### Pull requests
 
-The resulting PDF will be written to:
+Every pull request into `main` runs three quality jobs:
 
-    build/resume.pdf
+1. `build-and-lint` builds the PDF, validates it, and uploads it as a workflow artifact.
+2. `ruff` checks the Python support scripts.
+3. `commit-lint` validates commit messages using the repository's Conventional Commit rules.
 
-### Build Locally (if TeX Live is installed)
+Branch protection requires these checks to pass before merge.
 
-    make
+### Publish a résumé edition
 
-### Clean Build Artifacts
+Résumé releases use two phases so a tag is created only after the release commit reaches `main`.
 
-    make clean
+1. In GitHub Actions, run **Release - Propose Résumé Version**.
+2. Select a semantic version bump and provide a one-line release summary.
+3. The workflow builds and validates the résumé, updates `VERSION`, copies the PDF to `dist/resume.pdf`, writes the release notes, and opens a release PR.
+4. Review and merge that PR into `main` after its normal quality checks pass.
+5. **Release - Publish Résumé Version** automatically tags the merge commit and creates the GitHub Release with `dist/resume.pdf` attached.
 
-## Linting
+Do not tag releases manually. The automated flow keeps the version file, committed PDF, release notes, Git tag, and GitHub Release aligned.
 
-The lint pipeline verifies spelling, structure, and PDF quality before changes are merged or released. All lint checks are wrapped in a single command:
+## Versioning
 
-    make lint
+`VERSION` tracks editions of the résumé document. A change to résumé content that should be published requires a version bump and release; build, CI, and tooling changes do not.
 
-### What the Lint Step Checks
-- **codespell** for common spelling mistakes  
-- **LaTeX-aware spellchecker** that extracts only document text and applies an allowlist  
-- **cvlint** for PDF validation (single-page enforcement, metadata checks, link hygiene, etc.)
+Technical changes are recorded separately in `CHANGELOG.md`.
 
-A non-zero exit code from any check causes the entire lint step to fail, which is required for CI gating.
+## GitHub Pages
 
-## Continuous Integration
+`dist/resume.pdf` is the source for the stable web-hosted résumé. The Pages deployment should publish that released artifact—not the unreleased PDF generated from the current source—so the public URL always corresponds to a tagged résumé edition.
 
-All pull requests to `main` run an automated CI workflow that builds and validates the résumé.
+## Commit messages
 
-### What CI Does
-1. Builds the PDF in a pinned Docker environment  
-2. Runs the unified lint suite  
-3. Lints the Python tooling with ruff  
-4. Validates the PR's commit messages against the Conventional Commit rules  
-5. Uploads the generated PDF as an artifact for review  
+The repository uses the form `type(scope): subject`. Allowed types are:
 
-### Branch Protection
-The `main` branch is protected so that:
-- All changes must come through a pull request  
-- CI must pass before the pull request can be merged  
-
-This keeps `main` consistently buildable and lint-clean.
-
-## Release Workflow
-
-Résumé releases use a **two-phase** process so a version is only ever published from `main`, never from an unmerged branch.
-
-### Phase 1 — Propose (`release-propose.yml`, manual)
-Dispatched manually with a `bump` type (patch/minor/major) and a one-line `summary`. It:
-1. Rebuilds the résumé in Docker and runs the full lint suite  
-2. Bumps the `VERSION` file  
-3. Copies the validated PDF to `dist/resume.pdf`  
-4. Writes the summary to `release-notes/vX.Y.Z.md`  
-5. Opens a release pull request  
-
-No tag or GitHub Release is created in this phase.
-
-### Phase 2 — Publish (`release-publish.yml`, automatic)
-Triggered when a change to `VERSION` lands on `main` (i.e. a release PR is merged). It tags `vX.Y.Z` at that commit and creates the GitHub Release — using `release-notes/vX.Y.Z.md` as the body and attaching `dist/resume.pdf`.
-
-This guarantees every published résumé is versioned, validated, and traceable, and that the tag always points at a real commit on `main`.
-
-### Versioning and changelog
-`VERSION` tracks the **résumé document**, not the build tooling — a bump means a new edition of the résumé. Each edition is a Git tag + GitHub Release. `CHANGELOG.md` is a separate **technical** changelog for build, CI, and tooling changes.
-
-## GitHub Pages [Coming Soon]
+- `feat`
+- `fix`
+- `docs`
+- `chore`
