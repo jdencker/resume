@@ -24,6 +24,10 @@ allowlist:
   - Kubernetes
   - Palantir
   - PyTorch
+  - PySpark
+  - Polars
+  - Kalman
+  - LiDAR
   - roadmap
-  - timelines
-  - show-of-force
+  - staff-hours
+  - Swinergy's
